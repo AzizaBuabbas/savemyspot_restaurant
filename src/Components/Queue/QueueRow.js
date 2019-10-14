@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import socketStore from "../../Stores/socketStore";
 
 class QueueRow extends Component {
   render() {
