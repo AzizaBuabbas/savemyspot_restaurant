@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import QueueRow from "./QueueRow";
 
 //Stores
+import socketStore from "../../Stores/socketStore";
 import authStore from "../../Stores/authStore";
 
 class Queue extends Component {
@@ -14,6 +15,19 @@ class Queue extends Component {
     this.state = {
       queue: []
     };
+  }
+  componentDidMount() {
+    socketStore.restaurantSignIn(authStore.restaurant);
+    socketStore.socket.on("restaurantQ", data => {
+      this.setState({ queue: data });
+    });
+    socketStore.socket.on("update queue", () => {
+      socketStore.restaurantSignIn(authStore.restaurant);
+    });
+  }
+
+  componentWillUnmount() {
+    socketStore.socket.off("restaurantQ");
   }
 
   render() {

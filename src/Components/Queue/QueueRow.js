@@ -11,7 +11,12 @@ class QueueRow extends Component {
         </td>
         <td style={num}>{queue.guests}</td>
         <td>
-          <button className="btn btn-dark">Seat</button>
+          <button
+            className="btn btn-dark"
+            onClick={() => socketStore.seatGuest(queue.id)}
+          >
+            Seat
+          </button>
         </td>
       </tr>
     );
