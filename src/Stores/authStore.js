@@ -1,10 +1,6 @@
 import { decorate, observable } from "mobx";
-import axios from "axios";
+import instance from "./instance";
 import jwt_decode from "jwt-decode";
-
-const instance = axios.create({
-  baseURL: "http://127.0.0.1:8000/"
-});
 
 class AuthStore {
   constructor() {
@@ -22,9 +18,9 @@ class AuthStore {
       localStorage.setItem("token", token);
       localStorage.setItem("restaurant", restaurant);
       localStorage.setItem("restaurantid", restaurantid);
-      axios.defaults.headers.common.Authorization = `jwt ${token}`;
-      axios.defaults.headers.common.Authorization = `${restaurant}`;
-      axios.defaults.headers.common.Authorization = `${restaurantid}`;
+      instance.defaults.headers.common.Authorization = `jwt ${token}`;
+      instance.defaults.headers.common.Authorization = `${restaurant}`;
+      instance.defaults.headers.common.Authorization = `${restaurantid}`;
       this.user = jwt_decode(token);
       this.loading = false;
       this.restaurant = restaurant;
@@ -33,7 +29,7 @@ class AuthStore {
       localStorage.removeItem("token");
       localStorage.removeItem("restaurant");
       localStorage.removeItem("restaurantid");
-      delete axios.defaults.headers.common.Authorization;
+      delete instance.defaults.headers.common.Authorization;
       this.user = null;
       this.restaurant = null;
       this.restaurantid = null;
@@ -66,8 +62,10 @@ class AuthStore {
     instance
       .post("/signin/", userData)
       .then(res => {
-        this.restaurant = res.data.restaurant;
+        console.log(res.data);
         this.getRestaurantDetails(res.data.restaurant);
+        this.restaurant = res.data.restaurant;
+
         return res.data;
       })
       .then(user => {
