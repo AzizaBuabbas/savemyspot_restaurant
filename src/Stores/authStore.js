@@ -5,11 +5,13 @@ import jwt_decode from "jwt-decode";
 class AuthStore {
   constructor() {
     this.user = null;
+    this.restaurants = [];
     this.restaurant = null;
     this.restaurantid = null;
     this.loading = true;
     this.restaurantLoading = true;
-
+    this.queue = [];
+    this.queueLoading = true;
     this.checkForToken();
   }
 
@@ -54,6 +56,7 @@ class AuthStore {
     instance
       .post(`/${type}/`, userData)
       .then(res => res.data)
+
       .then(user => this.setUser(user.token))
       .catch(err => console.error(err));
   }
@@ -76,15 +79,43 @@ class AuthStore {
       .catch(err => console.error(err));
   };
 
-  getRestaurantDetails(restaurantID) {
+  getRestaurantDetails(restaurantid) {
     instance
-      .get(`restaurant/detail/${restaurantID}/`)
-      .then(restaurant => {
-        this.restaurantid = restaurant;
+      .get(`restaurant/detail/${restaurantid}/`)
+      .then(restaurantid => {
+        this.restaurantid = restaurantid;
         this.restaurauntLoading = false;
       })
       .catch(err => console.error(err));
   }
+  getRestaurantlist() {
+    instance
+      .get("restaurant/list/")
+      .then(restaurants => {
+        this.restaurants = restaurants;
+        this.restaurauntLoading = false;
+      })
+      .catch(err => console.error(err));
+  }
+
+  getQueuelist() {
+    instance
+      .get("queue/list/")
+      .then(queue => {
+        this.queue = this.queue;
+        this.queueLoading = false;
+      })
+      .catch(err => console.error(err));
+  }
+
+  // fetchQueuelist = async () => {
+  //    try {
+  //      let res = await instance.get("queue/list/");
+  //      this.queue = res.data;
+  //      this.queueloading = false;
+  //    } catch (err) {
+  //      console.error(err.stack);
+  //    }
 
   logout = async history => {
     await this.setUser();
@@ -97,7 +128,12 @@ decorate(AuthStore, {
   restaurant: observable,
   loading: observable,
   restaurantid: observable,
-  restaurantLoading: observable
+  restaurantLoading: observable,
+  restaurants: observable,
+  queue: observable,
+  queueLoading: observable
 });
 
-export default new AuthStore();
+const authstore = new AuthStore();
+
+export default authstore;
